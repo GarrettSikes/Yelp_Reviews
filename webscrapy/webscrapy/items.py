@@ -15,5 +15,6 @@ class WebscrapyItem(scrapy.Item):
     num_reviews = scrapy.Field()
     location = scrapy.Field()
     reviewer_username = scrapy.Field()
-    review_text = scrapy.Field()
+    review_rating = scrapy.Field()
+    #review_text = scrapy.Field()
 
