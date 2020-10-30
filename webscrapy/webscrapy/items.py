@@ -13,7 +13,7 @@ class WebscrapyItem(scrapy.Item):
     overall_rating = scrapy.Field()
     dollar_rating = scrapy.Field()
     num_reviews = scrapy.Field()
-    city = scrapy.Field()
+    location = scrapy.Field()
     reviewer_username = scrapy.Field()
     review_text = scrapy.Field()
 

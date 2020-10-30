@@ -39,50 +39,57 @@ class yelp_reviewsSpider(Spider):
             #num_pages = int(response.xpath('').extract_first()) 
             for n in range(0,21,10): # 100 most reviewed resteraunts at 10 resteraunts per page: (10*num_pages)+1 would go through all pages
                 # print('Test here above cities_url append', '&'*50)
-                yelp_cities_urls.append(potential_cities_format.format(city,n))
+                yelp_cities_urls.append((city, potential_cities_format.format(city,n)))
                 #print(city)
                 #print(yelp_cities_url)
                 #print('2nd urls for loop', '-'*80)
             # print('3rd for loop', '-'*80)
 
-        for city_url in yelp_cities_urls[:3]:
+        meta = {'yelp_cities_urls': yelp_cities_urls}
+
+        for city, url in yelp_cities_urls[:3]:
             #print(url, ':'*40)
-            yield Request(url=city_url, callback = self.parse_urls)
+            yield Request(url=url, callback = self.parse_urls, meta=meta)
 
         print('last for loop', '-'*40)
 
 
     def parse_urls(self, response):
         # this function is meant to grab each resteraunts unique yelp url 
-        #base_url = 'https://www.yelp.com'
+        yelp_cities_urls = response.meta['yelp_cities_urls']
 
         resteraunt_urls = response.xpath('//a[@class=" link__09f24__1kwXV link-color--inherit__09f24__3PYlA link-size--inherit__09f24__2Uj95"]/@href').extract()   #------------------------
         resteraunt_urls = list(filter(lambda url: url.find("ad_business_id") == -1, resteraunt_urls))
 
         #resteraunt_names = response.xpath('//a[@class=" link__09f24__1kwXV link-color--inherit__09f24__3PYlA link-size--inherit__09f24__2Uj95"]/@name').extract_first()
 
+        meta = {'yelp_cities_urls': yelp_cities_urls}
+
         for link in resteraunt_urls[:3]:
             #link = response.xpath('')
             #resteraunt_urls = resteraunt_urls.append(link)
             link = 'https://www.yelp.com' + link              # ----------------------------------------
             #print(url, ':'*40)
-            yield Request(url=link, callback=self.parse_info)
+            yield Request(url=link, callback=self.parse_info, meta=meta)
 
         print('"link" loop finished', '='*40)
+        
 
 
     def parse_info(self, response):
+        yelp_cities_urls = response.meta['yelp_cities_urls']
+
         # Retrieve the objects from meta
         print('on info page', '+'*40)
         #num_pages = 10 
-    
+        print(yelp_cities_urls)
         #for row in rows[:2]:
         rest_name = response.xpath('//h1[@class="lemon--h1__373c0__2ZHSL heading--h1__373c0__dvYgw undefined heading--inline__373c0__10ozy"]/text()').extract_first()
         num_reviews = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT arrange-unit-fill__373c0__3Sfw1 border-color--default__373c0__3-ifU"]//p/text()').extract_first()
         overall_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT border-color--default__373c0__3-ifU"]/span/div/@aria-label').extract_first()
         dollar_rating = response.xpath('//span[@class="lemon--span__373c0__3997G text__373c0__2Kxyz text-color--normal__373c0__3xep9 text-align--left__373c0__2XGa- text-bullet--after__373c0__3fS1Z text-size--large__373c0__3t60B"]/text()').extract_first()
         
-        #city = response.xpath('//div[@class="lemon--div__373c0__1mboc border-color--default__373c0__3-ifU overflow--hidden__373c0__2y4YK"]/input/@value').extract_first()  
+        #location = response.xpath('//div[@class="lemon--div__373c0__1mboc border-color--default__373c0__3-ifU overflow--hidden__373c0__2y4YK"]/input/@value').extract_first()  
         #review_text = response.xpath('').extract()
         #reviewer_username = 
 
@@ -92,10 +99,11 @@ class yelp_reviewsSpider(Spider):
         item['overall_rating'] = overall_rating
         item['dollar_rating'] = dollar_rating
         item['num_reviews'] = num_reviews
-        #item['city'] = city # use a dictionary and meta to pass this from parse
+        #item['location'] =  # use a dictionary and meta to pass this from parse
 
         #item['reviewer_username'] = reviewer_username
         #item['review_text'] = review_text
+
 
         yield item
 
