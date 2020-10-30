@@ -37,7 +37,6 @@ class yelp_reviewsSpider(Spider):
         for city in potential_cities_urls:
             # print('Test here above range of 0 to 150', '$'*50)
             #num_pages = int(response.xpath('').extract_first()) 
-            cities = potential_cities[city]   
             for n in range(0,21,10): # 100 most reviewed resteraunts at 10 resteraunts per page: (10*num_pages)+1 would go through all pages
                 # print('Test here above cities_url append', '&'*50)
                 yelp_cities_urls.append(potential_cities_format.format(city,n))
@@ -79,9 +78,10 @@ class yelp_reviewsSpider(Spider):
     
         #for row in rows[:2]:
         rest_name = response.xpath('//h1[@class="lemon--h1__373c0__2ZHSL heading--h1__373c0__dvYgw undefined heading--inline__373c0__10ozy"]/text()').extract_first()
-        overall_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc i-stars__373c0__1T6rz i-stars--large-4__373c0__1d6HV border-color--default__373c0__3-ifU overflow--hidden__373c0__2y4YK"]/@aria-label').extract_first()
+        num_reviews = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT arrange-unit-fill__373c0__3Sfw1 border-color--default__373c0__3-ifU"]//p/text()').extract_first()
+        overall_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT border-color--default__373c0__3-ifU"]/span/div/@aria-label').extract_first()
         dollar_rating = response.xpath('//span[@class="lemon--span__373c0__3997G text__373c0__2Kxyz text-color--normal__373c0__3xep9 text-align--left__373c0__2XGa- text-bullet--after__373c0__3fS1Z text-size--large__373c0__3t60B"]/text()').extract_first()
-        num_reviews = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT border-color--default__373c0__3-ifU nowrap__373c0__35McF"]/p/text()').extract_first()
+        
         #city = response.xpath('//div[@class="lemon--div__373c0__1mboc border-color--default__373c0__3-ifU overflow--hidden__373c0__2y4YK"]/input/@value').extract_first()  
         #review_text = response.xpath('').extract()
         #reviewer_username = 
