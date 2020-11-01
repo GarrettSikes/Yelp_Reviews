@@ -66,11 +66,52 @@ class yelp_reviewsSpider(Spider):
             #resteraunt_urls = resteraunt_urls.append(link)
             link = 'https://www.yelp.com' + link              # ----------------------------------------
             #print(url, ':'*40)
-            yield Request(url=link, callback=self.parse_resteraunt_page, meta=response.meta)
+            yield Request(url=link, callback=self.parse_info, meta=response.meta)
 
         #print('link loop finished', '='*40)
-        
 
+    def parse_info(self, response):
+
+        # Retrieve the objects from meta
+        print('on info page', '+'*40)
+        #num_pages = 10 
+
+        rest_name = response.xpath('//h1[@class="lemon--h1__373c0__2ZHSL heading--h1__373c0__dvYgw undefined heading--inline__373c0__10ozy"]/text()').extract_first()
+        num_reviews = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT arrange-unit-fill__373c0__3Sfw1 border-color--default__373c0__3-ifU"]//p/text()').extract_first()
+        overall_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT border-color--default__373c0__3-ifU"]/span/div/@aria-label').extract_first()
+        dollar_rating = response.xpath('//span[@class="lemon--span__373c0__3997G text__373c0__2Kxyz text-color--normal__373c0__3xep9 text-align--left__373c0__2XGa- text-bullet--after__373c0__3fS1Z text-size--large__373c0__3t60B"]/text()').extract_first()
+        
+        location = response.meta['location']
+        
+        reviewer_username = response.xpath('//div[@class="lemon--div__373c0__1mboc user-passport-info border-color--default__373c0__3-ifU"]/span/a/text()').extract() 
+        review_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT arrange-unit-grid-column--8__373c0__2dUx_ border-color--default__373c0__3-ifU"]//span/div/@aria-label').extract()
+        review_text = response.xpath('//div[@class="lemon--div__373c0__1mboc margin-b2__373c0__abANL border-color--default__373c0__3-ifU"]/p/span/text()').extract()
+
+        print(reviewer_username, 'u'*40)
+        print(review_rating, 'r'*40)
+        print(review_text, 't'*40)
+
+        item = WebscrapyItem()
+
+        item['rest_name'] = rest_name
+        item['overall_rating'] = overall_rating
+        item['dollar_rating'] = dollar_rating
+        item['num_reviews'] = num_reviews
+        item['location'] = location
+
+        item['reviewer_username'] = reviewer_username
+        item['review_ratings'] = review_rating
+        item['review_texts'] = review_text
+
+        #print('review_text')
+
+        yield item
+
+# best way to go through comments
+
+
+        
+'''
     def parse_resteraunt_page(self, response):
         # Find nmumber of review pages
         num_pages = 5 #response.xpath('//div[@class="lemon--div__373c0__1mboc pagination__373c0__3z4d_ border--top__373c0__3gXLy border--bottom__373c0__3qNtD border-color--default__373c0__3-ifU"]//span/text()').extract_first()
@@ -89,40 +130,6 @@ class yelp_reviewsSpider(Spider):
             #print(page, '-'*40)
             yield Request(url=page, callback=self.parse_info, meta=response.meta)
             
-
-
-    def parse_info(self, response):
-
-        # Retrieve the objects from meta
-        print('on info page', '+'*40)
-        #num_pages = 10 
-
-        rest_name = response.xpath('//h1[@class="lemon--h1__373c0__2ZHSL heading--h1__373c0__dvYgw undefined heading--inline__373c0__10ozy"]/text()').extract_first()
-        num_reviews = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT arrange-unit-fill__373c0__3Sfw1 border-color--default__373c0__3-ifU"]//p/text()').extract_first()
-        overall_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT border-color--default__373c0__3-ifU"]/span/div/@aria-label').extract_first()
-        dollar_rating = response.xpath('//span[@class="lemon--span__373c0__3997G text__373c0__2Kxyz text-color--normal__373c0__3xep9 text-align--left__373c0__2XGa- text-bullet--after__373c0__3fS1Z text-size--large__373c0__3t60B"]/text()').extract_first()
-        location = response.meta['location']
-        
-        #reviewer_username = response.xpath('//div[@class="lemon--div__373c0__1mboc user-passport-info border-color--default__373c0__3-ifU"]/span/a/text()').extract() 
-        #review_rating = response.xpath('//div[@class="lemon--div__373c0__1mboc arrange-unit__373c0__o3tjT arrange-unit-grid-column--8__373c0__2dUx_ border-color--default__373c0__3-ifU"]//span/div/@aria-label').extract()
-        #review_text =  
-
-        item = WebscrapyItem()
-
-        item['rest_name'] = rest_name
-        item['overall_rating'] = overall_rating
-        item['dollar_rating'] = dollar_rating
-        item['num_reviews'] = num_reviews
-        item['location'] = location
-
-        #item['reviewer_username'] = reviewer_username
-        #item['review_rating'] = review_rating
-        #item['review_text'] = review_text
-
-        yield item
-
-# best way to go through comments
-
-
+'''
 
         
