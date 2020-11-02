@@ -56,12 +56,12 @@ class yelp_reviewsSpider(Spider):
     def parse_urls(self, response):
         # this function is meant to grab each resteraunts unique yelp url 
 
-        resteraunt_urls = response.xpath('//a[@class=" link__09f24__1kwXV link-color--inherit__09f24__3PYlA link-size--inherit__09f24__2Uj95"]/@href').extract()   #------------------------
-        resteraunt_urls = list(filter(lambda url: url.find("ad_business_id") == -1, resteraunt_urls))
+        restaurant_urls = response.xpath('//a[@class=" link__09f24__1kwXV link-color--inherit__09f24__3PYlA link-size--inherit__09f24__2Uj95"]/@href').extract()   #------------------------
+        restaurant_urls = list(filter(lambda url: url.find("ad_business_id") == -1, restaurant_urls))
 
         #resteraunt_names = response.xpath('//a[@class=" link__09f24__1kwXV link-color--inherit__09f24__3PYlA link-size--inherit__09f24__2Uj95"]/@name').extract_first()
 
-        for link in resteraunt_urls:
+        for link in restaurant_urls:
             #link = response.xpath('')
             #resteraunt_urls = resteraunt_urls.append(link)
             link = 'https://www.yelp.com' + link              # ----------------------------------------
@@ -112,7 +112,7 @@ class yelp_reviewsSpider(Spider):
 
         
 '''
-    def parse_resteraunt_page(self, response):
+    def parse_restaurant_page(self, response):
         # Find nmumber of review pages
         num_pages = 5 #response.xpath('//div[@class="lemon--div__373c0__1mboc pagination__373c0__3z4d_ border--top__373c0__3gXLy border--bottom__373c0__3qNtD border-color--default__373c0__3-ifU"]//span/text()').extract_first()
         starting_rest_page = response.request.url
